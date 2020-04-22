@@ -7,11 +7,11 @@ Post Scheduler is a plugin that allows you to modify the created time of posts.
 # Installation
 - Download and copy source code into `/platform/plugins/post-scheduler`.
 - Go to Admin -> Plugins or run command `php artisan cms:plugin:activate post-scheduler` to activate this plugin.
-- Go to Admin -> Platform Administration -> System logs.
+- Go to Admin -> Blog -> Posts -> Create a new post, you will see block to change post's created date in the right side.
 
 # Screenshots
 
-![Single log](https://raw.githubusercontent.com/botble/post-scheduler/master/public/images/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/botble/post-scheduler/master/public/images/screenshot.png)
 
 # Contact us
 - Website: [https://botble.com](https://botble.com)
