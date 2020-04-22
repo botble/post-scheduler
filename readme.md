@@ -7,7 +7,7 @@ Post Scheduler is a plugin that allows you to modify the created time of posts.
 # Installation
 - Download and copy source code into `/platform/plugins/post-scheduler`.
 - Go to Admin -> Plugins or run command `php artisan cms:plugin:activate post-scheduler` to activate this plugin.
-- Go to Admin -> Blog -> Posts -> Create a new post, you will see block to change post's created date in the right side.
+- Go to Admin -> Blog -> Posts -> Create a new post, you will see block to change post's created date on the right-hand side of the screen.
 
 # Screenshots
 
