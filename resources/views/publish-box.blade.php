@@ -1,5 +1,5 @@
 <div class="row form-group @if ($errors->has('publish_date')) has-error @endif">
-    <label for="publish_date" class="control-label col-sm-3 text-right">{{ __('Date') }}</label>
+    <label for="publish_date" class="control-label col-sm-3 text-right">{{ trans('plugins/post-scheduler::post-scheduler.date') }}</label>
     <div class="col-sm-9">
         <div class="input-group date form_datetime form_datetime bs-datetime">
             {!! Form::text('publish_date', old('publish_date', $publishDate), ['class' => 'form-control datepicker', 'id' => 'publish_date', 'data-date-format' => config('core.base.general.date_format.js.date'),]) !!}
@@ -14,7 +14,7 @@
 </div>
 
 <div class="row form-group @if ($errors->has('publish_time')) has-error @endif">
-    <label for="publish_time" class="control-label col-sm-3 text-right">{{ __('Time') }}</label>
+    <label for="publish_time" class="control-label col-sm-3 text-right">{{ trans('plugins/post-scheduler::post-scheduler.time') }}</label>
     <div class="col-sm-9">
         <div class="input-group">
             {!! Form::text('publish_time', old('publish_time', $publishTime), ['class' => 'form-control time-picker timepicker timepicker-24', 'id' => 'publish_time']) !!}
@@ -31,6 +31,6 @@
 @if ($data && $data->status != \Botble\Base\Enums\BaseStatusEnum::PUBLISHED)
     <div class="form-group">
         {!! Form::onOff('update_time_to_current', 0) !!}
-        <label class="control-label">{{ __('Update published time to current time') }}</label>
+        <label class="control-label">{{ trans('plugins/post-scheduler::post-scheduler.update_publish_time_to_current_time') }}</label>
     </div>
 @endif

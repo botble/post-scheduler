@@ -4,9 +4,12 @@ namespace Botble\PostScheduler\Providers;
 
 use Assets;
 use Auth;
+use BaseHelper;
+use Botble\Base\Models\BaseModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
+use MetaBox;
 use PostScheduler;
 
 class HookServiceProvider extends ServiceProvider
@@ -24,7 +27,7 @@ class HookServiceProvider extends ServiceProvider
 
     /**
      * @param string $priority
-     * @param $object
+     * @param BaseModel $object
      */
     public function addPublishBox(string $priority, $object)
     {
@@ -32,7 +35,7 @@ class HookServiceProvider extends ServiceProvider
             Assets::addScripts(['timepicker'])
                 ->addStyles(['timepicker']);
 
-            add_meta_box('publish_box_wrap', __('Publish date'), [$this, 'addPublishFields'], get_class($object), $priority, 'default');
+            MetaBox::addMetaBox('publish_box_wrap', trans('plugins/post-scheduler::post-scheduler.publish_date'), [$this, 'addPublishFields'], get_class($object), $priority, 'default');
         }
     }
 
@@ -48,8 +51,8 @@ class HookServiceProvider extends ServiceProvider
         $args = func_get_args();
         $data = $args[0];
         if ($data && $data->id) {
-            $publishDate = date_from_database($data->created_at, config('core.base.general.date_format.date'));
-            $publishTime = date_from_database($data->created_at, 'G:i');
+            $publishDate = BaseHelper::formatDate($data->created_at);
+            $publishTime = BaseHelper::formatDate($data->created_at, 'G:i');
         }
 
         return view('plugins/post-scheduler::publish-box', compact('publishDate', 'publishTime', 'data'))->render();

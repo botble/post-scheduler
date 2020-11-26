@@ -24,7 +24,9 @@ class PostSchedulerServiceProvider extends ServiceProvider
 
             AliasLoader::getInstance()->alias('PostScheduler', PostSchedulerFacade::class);
 
-            $this->app->register(HookServiceProvider::class);
+            $this->app->booted(function () {
+                $this->app->register(HookServiceProvider::class);
+            });
         }
     }
 }

@@ -2,8 +2,8 @@
   "name": "Post Scheduler",
   "namespace": "Botble\\PostScheduler\\",
   "provider": "Botble\\PostScheduler\\Providers\\PostSchedulerServiceProvider",
-  "author": "Sang Nguyen",
-  "url": "https://sangnguyen.info",
-  "version": "5.3",
+  "author": "Botble Technologies",
+  "url": "https://botble.com",
+  "version": "5.8",
   "description": "Set published time for posts"
 }
