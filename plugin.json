@@ -4,6 +4,6 @@
   "provider": "Botble\\PostScheduler\\Providers\\PostSchedulerServiceProvider",
   "author": "Botble Technologies",
   "url": "https://botble.com",
-  "version": "1.1",
+  "version": "1.1.0",
   "description": "Set published time for posts"
 }
