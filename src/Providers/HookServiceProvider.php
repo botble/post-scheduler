@@ -3,11 +3,9 @@
 namespace Botble\PostScheduler\Providers;
 
 use Assets;
-use Auth;
 use BaseHelper;
-use Botble\Base\Models\BaseModel;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use MetaBox;
 use PostScheduler;
@@ -25,28 +23,27 @@ class HookServiceProvider extends ServiceProvider
         add_filter(BASE_FILTER_BEFORE_GET_SINGLE, [$this, 'checkPublishDateBeforeShowSingle'], 129, 2);
     }
 
-    /**
-     * @param string $priority
-     * @param BaseModel $object
-     */
-    public function addPublishBox(string $priority, $object)
+    public function addPublishBox(string $priority, $object): void
     {
         if (PostScheduler::isSupportedModule(get_class($object)) && $priority == 'top') {
             Assets::addScripts(['timepicker'])
                 ->addStyles(['timepicker']);
 
-            MetaBox::addMetaBox('publish_box_wrap', trans('plugins/post-scheduler::post-scheduler.publish_date'), [$this, 'addPublishFields'], get_class($object), $priority, 'default');
+            MetaBox::addMetaBox(
+                'publish_box_wrap',
+                trans('plugins/post-scheduler::post-scheduler.publish_date'),
+                [$this, 'addPublishFields'],
+                get_class($object),
+                $priority,
+                'default'
+            );
         }
     }
 
-    /**
-     * @return string
-     * @throws \Throwable
-     */
-    public function addPublishFields()
+    public function addPublishFields(): string
     {
-        $publishDate = now(config('app.timezone'))->format(config('core.base.general.date_format.date'));
-        $publishTime = now(config('app.timezone'))->format('G:i');
+        $publishDate = Carbon::now(config('app.timezone'))->format(config('core.base.general.date_format.date'));
+        $publishTime = Carbon::now(config('app.timezone'))->format('G:i');
 
         $args = func_get_args();
         $data = $args[0];
@@ -58,35 +55,28 @@ class HookServiceProvider extends ServiceProvider
         return view('plugins/post-scheduler::publish-box', compact('publishDate', 'publishTime', 'data'))->render();
     }
 
-    /**
-     * @param $screen
-     * @param Request $request
-     * @param \Eloquent $object
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     */
     public function saveSchedulerData($screen, $request, $object)
     {
         if (PostScheduler::isSupportedModule(get_class($object))) {
             if ($request->input('update_time_to_current')) {
                 $object->created_at = now();
                 $object->save();
+
                 return;
             }
 
             $publishDate = $request->input('publish_date');
             $publishTime = $request->input('publish_time', '00:00');
-            if (!empty($publishDate)) {
-                $object->created_at = Carbon::createFromFormat(config('core.base.general.date_format.date') . ' G:i', $publishDate . ' ' . $publishTime)->toDateTimeString();
+            if (! empty($publishDate)) {
+                $object->created_at = Carbon::createFromFormat(
+                    config('core.base.general.date_format.date') . ' G:i',
+                    $publishDate . ' ' . $publishTime
+                )->toDateTimeString();
                 $object->save();
             }
         }
     }
 
-    /**
-     * @param \Illuminate\Database\Eloquent\Builder $data
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @return mixed
-     */
     public function checkPublishDateBeforeShowSingle($data, $model)
     {
         if (Auth::check()) {
@@ -96,12 +86,6 @@ class HookServiceProvider extends ServiceProvider
         return $this->checkPublishDateBeforeShow($data, $model);
     }
 
-    /**
-     * @param \Illuminate\Database\Eloquent\Builder $data
-     * @param $screen
-     * @param \Illuminate\Database\Eloquent\Model $model
-     * @return mixed
-     */
     public function checkPublishDateBeforeShow($data, $model)
     {
         if (PostScheduler::isSupportedModule(get_class($model))) {

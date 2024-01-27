@@ -1,10 +1,11 @@
 {
-  "id": "botble/post-scheduler",
-  "name": "Post Scheduler",
-  "namespace": "Botble\\PostScheduler\\",
-  "provider": "Botble\\PostScheduler\\Providers\\PostSchedulerServiceProvider",
-  "author": "Botble Technologies",
-  "url": "https://botble.com",
-  "version": "1.1.1",
-  "description": "Set published time for posts"
+    "id": "botble/post-scheduler",
+    "name": "Post Scheduler",
+    "namespace": "Botble\\PostScheduler\\",
+    "provider": "Botble\\PostScheduler\\Providers\\PostSchedulerServiceProvider",
+    "author": "Botble Technologies",
+    "url": "https://botble.com",
+    "version": "1.2.0",
+    "minimum_core_version": "6.0.0",
+    "description": "Set published time for posts"
 }
