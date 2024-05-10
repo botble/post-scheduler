@@ -3,7 +3,7 @@
 namespace Botble\PostScheduler\Providers;
 
 use Botble\Base\Traits\LoadAndPublishDataTrait;
-use Botble\PostScheduler\Facades\PostSchedulerFacade;
+use Botble\PostScheduler\Facades\PostScheduler;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,7 +22,7 @@ class PostSchedulerServiceProvider extends ServiceProvider
             ->loadAndPublishTranslations()
             ->loadAndPublishViews();
 
-        AliasLoader::getInstance()->alias('PostScheduler', PostSchedulerFacade::class);
+        AliasLoader::getInstance()->alias('PostScheduler', PostScheduler::class);
 
         $this->app->booted(function () {
             $this->app->register(HookServiceProvider::class);

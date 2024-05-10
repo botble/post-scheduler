@@ -5,7 +5,8 @@
     "provider": "Botble\\PostScheduler\\Providers\\PostSchedulerServiceProvider",
     "author": "Botble Technologies",
     "url": "https://botble.com",
-    "version": "1.2.0",
-    "minimum_core_version": "6.0.0",
-    "description": "Set published time for posts"
+    "version": "1.3.0",
+    "minimum_core_version": "7.0.0",
+    "description": "Set published time for posts",
+    "required_plugins": ["blog"]
 }
