@@ -2,16 +2,20 @@
 
 namespace Botble\PostScheduler\Facades;
 
-use Botble\PostScheduler\Supports\PostScheduler;
+use Botble\PostScheduler\Supports\PostScheduler as BasePostScheduler;
 use Illuminate\Support\Facades\Facade;
 
 /**
-* @see \Botble\PostScheduler\Supports\PostScheduler
-*/
+ * @method static \Botble\PostScheduler\Supports\PostScheduler registerModule(array|string $model)
+ * @method static array supportedModules()
+ * @method static bool isSupportedModule(string $model)
+ *
+ * @see \Botble\PostScheduler\Supports\PostScheduler
+ */
 class PostScheduler extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return PostScheduler::class;
+        return BasePostScheduler::class;
     }
 }
