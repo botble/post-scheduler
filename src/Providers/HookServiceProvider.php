@@ -7,6 +7,7 @@ use Botble\Base\Facades\BaseHelper;
 use Botble\Base\Facades\MetaBox;
 use Botble\PostScheduler\Facades\PostScheduler;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 
@@ -47,13 +48,13 @@ class HookServiceProvider extends ServiceProvider
     public function addPublishFields(): string
     {
         $publishDate = Carbon::now(config('app.timezone'))->format(BaseHelper::getDateFormat());
-        $publishTime = Carbon::now(config('app.timezone'))->format('G:i');
+        $publishTime = Carbon::now(config('app.timezone'))->format('H:i');
 
         $args = func_get_args();
         $data = $args[0];
         if ($data && $data->id) {
             $publishDate = BaseHelper::formatDate($data->created_at);
-            $publishTime = BaseHelper::formatDate($data->created_at, 'G:i');
+            $publishTime = BaseHelper::formatDate($data->created_at, 'H:i');
         }
 
         return view('plugins/post-scheduler::publish-box', compact('publishDate', 'publishTime', 'data'))->render();
@@ -61,24 +62,39 @@ class HookServiceProvider extends ServiceProvider
 
     public function saveSchedulerData($screen, $request, $object): void
     {
-        if (PostScheduler::isSupportedModule($object::class)) {
-            if ($request->input('update_time_to_current')) {
-                $object->created_at = Carbon::now();
-                $object->save();
-
-                return;
-            }
-
-            $publishDate = $request->input('publish_date');
-            $publishTime = $request->input('publish_time', '00:00');
-            if (! empty($publishDate)) {
-                $publishTime = $publishTime ?: '00:00';
-
-                $object->created_at = Carbon::parse($publishDate . ' ' . $publishTime)->toDateTimeString();
-
-                $object->saveQuietly();
-            }
+        if (! PostScheduler::isSupportedModule($object::class)) {
+            return;
         }
+
+        if ($request->input('update_time_to_current')) {
+            $object->created_at = Carbon::now();
+            $object->save();
+
+            return;
+        }
+
+        $publishDate = $request->input('publish_date');
+
+        if (empty($publishDate)) {
+            return;
+        }
+
+        $dateTime = BaseHelper::parseDate($publishDate);
+
+        if (! $dateTime) {
+            return;
+        }
+
+        $publishTime = substr($request->input('publish_time') ?: '00:00', 0, 5);
+
+        try {
+            $dateTime->setTimeFromTimeString($publishTime);
+        } catch (\Throwable) {
+            $dateTime->setTime(0, 0);
+        }
+
+        $object->created_at = $dateTime->toDateTimeString();
+        $object->saveQuietly();
     }
 
     public function checkPublishDateBeforeShowSingle($data, $model)
@@ -92,10 +108,22 @@ class HookServiceProvider extends ServiceProvider
 
     public function checkPublishDateBeforeShow($data, $model)
     {
-        if (PostScheduler::isSupportedModule(get_class($model))) {
-            $table = $model->getTable();
-            $data->where($table . '.created_at', '<=', Carbon::now(config('app.timezone'))->toDateTimeString());
+        if (! PostScheduler::isSupportedModule(get_class($model))) {
+            return $data;
         }
+
+        $now = Carbon::now(config('app.timezone'));
+
+        // model_after_execute_get passes an already-executed Collection, where
+        // mutating ->where() returns a new collection instead of modifying in
+        // place. Filter and return explicitly so future-dated posts are hidden.
+        if ($data instanceof Collection) {
+            return $data
+                ->filter(fn ($item) => $item->created_at && $item->created_at <= $now)
+                ->values();
+        }
+
+        $data->where($model->getTable() . '.created_at', '<=', $now->toDateTimeString());
 
         return $data;
     }
