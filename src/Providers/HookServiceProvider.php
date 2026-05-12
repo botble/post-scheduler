@@ -119,7 +119,16 @@ class HookServiceProvider extends ServiceProvider
         // place. Filter and return explicitly so future-dated posts are hidden.
         if ($data instanceof Collection) {
             return $data
-                ->filter(fn ($item) => $item->created_at && $item->created_at <= $now)
+                ->filter(function ($item) use ($now) {
+                    // When ->select() omits created_at, the attribute is absent
+                    // on the model and we cannot decide. Preserve the row
+                    // rather than silently dropping every result.
+                    if (! array_key_exists('created_at', $item->getAttributes())) {
+                        return true;
+                    }
+
+                    return $item->created_at && $item->created_at <= $now;
+                })
                 ->values();
         }
 
